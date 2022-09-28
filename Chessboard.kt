@@ -83,12 +83,32 @@ class Chessboard {
         printChessboard()
         while (true) {
             if (gameState == GameState.PLAY) {
+                if (isStalemateCondition(SquareType.WHITE)) {
+                    println("Stalemate!")
+                    println("Bye!")
+                    return
+                }
                 playerTurn(player1name, SquareType.WHITE)
                 printChessboard()
+                if (isWinningCondition()) {
+                    println("White Wins!")
+                    println("Bye!")
+                    return
+                }
             } else break
             if (gameState == GameState.PLAY) {
+                if (isStalemateCondition(SquareType.BLACK)) {
+                    println("Stalemate!")
+                    println("Bye!")
+                    return
+                }
                 playerTurn(player2name, SquareType.BLACK)
                 printChessboard()
+                if (isWinningCondition()) {
+                    println("Black Wins!")
+                    println("Bye!")
+                    return
+                }
             } else break
         }
     }
@@ -221,5 +241,49 @@ class Chessboard {
 
             else -> return false
         }
+    }
+
+    private fun isWinningCondition(): Boolean {
+        var whitePawnsCount = 0
+        var blackPawnsCount = 0
+
+        chessboard[0].forEach { cell ->
+            if (cell == SquareType.BLACK) return true
+        }
+        chessboard[7].forEach { cell ->
+            if (cell == SquareType.WHITE) return true
+        }
+        chessboard.forEach { row ->
+            blackPawnsCount += row.count { it == SquareType.BLACK }
+            whitePawnsCount += row.count { it == SquareType.WHITE }
+        }
+        if (whitePawnsCount == 0 || blackPawnsCount == 0) return true
+
+        return false
+    }
+
+    private fun isStalemateCondition(playerColor: SquareType): Boolean {
+        chessboard.forEachIndexed { rowIndex, row ->
+            row.forEachIndexed { columnIndex, cell ->
+                when (playerColor) {
+                    SquareType.WHITE -> {
+                        if (cell == SquareType.WHITE && chessboard[rowIndex + 1][columnIndex] == SquareType.EMPTY) return false
+                        if (cell == SquareType.WHITE && columnIndex == 0 && chessboard[rowIndex + 1][columnIndex + 1] == SquareType.BLACK) return false
+                        if (cell == SquareType.WHITE && columnIndex == CHESS_COLUMN_NUMBER - 1 && chessboard[rowIndex + 1][columnIndex - 1] == SquareType.BLACK) return false
+                        if (cell == SquareType.WHITE && columnIndex != 0 && columnIndex != CHESS_COLUMN_NUMBER - 1 && (chessboard[rowIndex + 1][columnIndex + 1] == SquareType.BLACK || chessboard[rowIndex + 1][columnIndex - 1] == SquareType.BLACK)) return false
+                    }
+
+                    SquareType.BLACK -> {
+                        if (cell == SquareType.BLACK && chessboard[rowIndex - 1][columnIndex] == SquareType.EMPTY) return false
+                        if (cell == SquareType.BLACK && columnIndex == 0 && chessboard[rowIndex - 1][columnIndex + 1] == SquareType.WHITE) return false
+                        if (cell == SquareType.BLACK && columnIndex == CHESS_COLUMN_NUMBER - 1 && chessboard[rowIndex - 1][columnIndex - 1] == SquareType.WHITE) return false
+                        if (cell == SquareType.BLACK && columnIndex != 0 && columnIndex != CHESS_COLUMN_NUMBER - 1 && (chessboard[rowIndex - 1][columnIndex + 1] == SquareType.WHITE || chessboard[rowIndex - 1][columnIndex - 1] == SquareType.WHITE)) return false
+                    }
+
+                    else -> return false
+                }
+            }
+        }
+        return true
     }
 }
