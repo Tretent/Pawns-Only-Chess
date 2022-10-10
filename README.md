@@ -1,2 +1,2 @@
 # Pawns-Only-Chess
-Kotlin Basics Pawns-Only Chess project
+JetBrains Academy Kotlin Basics Pawns-Only Chess project
